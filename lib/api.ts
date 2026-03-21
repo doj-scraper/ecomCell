@@ -130,6 +130,44 @@ export async function fetchModels(brandId?: number): Promise<Model[]> {
 /**
  * Health check endpoint
  */
+export async function searchParts(device: string) {
+  const res = await fetch(`${API_BASE_URL}/api/parts?device=${encodeURIComponent(device)}`);
+  if (!res.ok) throw new Error("Failed to search parts");
+  return res.json();
+}
+
+export async function getPartDetails(skuId: string) {
+  const res = await fetch(`${API_BASE_URL}/api/inventory/${skuId}`);
+  if (!res.ok) throw new Error("Failed to fetch part details");
+  return res.json();
+}
+
+export async function getCompatibility(skuId: string) {
+  const res = await fetch(`${API_BASE_URL}/api/compatibility/${skuId}`);
+  if (!res.ok) throw new Error("Failed to fetch compatibility");
+  return res.json();
+}
+
+// Existing fetchBrands and fetchModels are similar, will reuse them.
+
+export async function searchParts(device: string) {
+  const res = await fetch(`${API_BASE_URL}/api/parts?device=${encodeURIComponent(device)}`);
+  if (!res.ok) throw new Error("Failed to search parts");
+  return res.json();
+}
+
+export async function getPartDetails(skuId: string) {
+  const res = await fetch(`${API_BASE_URL}/api/inventory/${skuId}`);
+  if (!res.ok) throw new Error("Failed to fetch part details");
+  return res.json();
+}
+
+export async function getCompatibility(skuId: string) {
+  const res = await fetch(`${API_BASE_URL}/api/compatibility/${skuId}`);
+  if (!res.ok) throw new Error("Failed to fetch compatibility");
+  return res.json();
+}
+
 export async function checkBackendHealth(): Promise<boolean> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/health`, { cache: 'no-store' });
