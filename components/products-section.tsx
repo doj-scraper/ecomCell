@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { searchParts } from '@/lib/api';
 
 export function ProductsSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -30,8 +31,7 @@ export function ProductsSection() {
     const loadProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('https://celltech-backend.vercel.app/api/parts?device=iPhone');
-        const data = await response.json();
+        const data = await searchParts('iPhone');
         if (data.success) {
           const mappedProducts = data.parts.map((p: any) => ({
             name: p.partName,
