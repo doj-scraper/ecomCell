@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export function ProductsSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -113,9 +114,9 @@ export function ProductsSection() {
         </div>
 
         <div className="mt-12 text-center">
-          <button className="link-arrow">
+          <Link href="/inventory" className="link-arrow">
             View full catalog <ArrowRight className="w-4 h-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>

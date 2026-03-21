@@ -40,6 +40,7 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
+            <Link href="/inventory" className="nav-link">Inventory</Link>
             <Link href="/catalog" className="nav-link">Catalog</Link>
             <Link href="/quote" className="nav-link">Quote</Link>
             <Link href="/support" className="nav-link">Support</Link>
@@ -72,6 +73,7 @@ export function Navigation() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-ct-bg/95 backdrop-blur-md border-t border-white/5">
           <div className="px-6 py-4 space-y-4">
+            <Link href="/inventory" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Inventory</Link>
             <Link href="/catalog" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Catalog</Link>
             <Link href="/quote" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Quote</Link>
             <Link href="/support" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Support</Link>
