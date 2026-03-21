@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { User, CreditCard, FileText } from 'lucide-react';
+"use client";
 
-export function CheckoutSection() {
+import { useEffect, useRef, useState } from 'react';
+import { FileText, Zap, Headphones, ArrowRight } from 'lucide-react';
+
+export function SupportSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -23,14 +25,15 @@ export function CheckoutSection() {
     return () => observer.disconnect();
   }, []);
 
-  const features = [
-    { icon: User, text: 'Guest checkout available' },
-    { icon: CreditCard, text: 'Net-30 for approved accounts' },
-    { icon: FileText, text: 'Instant invoice + tracking' },
+  const links = [
+    { text: 'Screen replacement guide', icon: FileText },
+    { text: 'Battery calibration steps', icon: Zap },
+    { text: 'Connector diagram PDF', icon: FileText },
+    { text: 'Open a support ticket', icon: Headphones },
   ];
 
   return (
-    <section ref={sectionRef} className="section-pinned flex items-center" style={{ zIndex: 40 }}>
+    <section ref={sectionRef} id="support" className="section-pinned flex items-center" style={{ zIndex: 80 }}>
       <div className="w-full px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-screen">
           {/* Left: Image */}
@@ -41,8 +44,8 @@ export function CheckoutSection() {
           >
             <div className="relative aspect-video rounded-2xl overflow-hidden">
               <img 
-                src="/images/checkout_ui.jpg" 
-                alt="Checkout UI"
+                src="/images/teardown_guide.jpg" 
+                alt="Teardown guide"
                 className="w-full h-full object-cover animate-drift"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-ct-bg/40 to-transparent" />
@@ -56,30 +59,26 @@ export function CheckoutSection() {
             }`}
           >
             <h2 className="heading-display text-3xl sm:text-4xl lg:text-5xl text-ct-text mb-4">
-              FAST<br />
-              <span className="text-ct-accent">CHECKOUT</span>
+              READY TO<br />
+              <span className="text-ct-accent">INSTALL</span>
             </h2>
             <p className="text-ct-text-secondary text-sm lg:text-base max-w-md mb-8">
-              No surprises. MOQ, shipping, and tax calculated upfront—then pay securely.
+              Step-by-step guides, connector maps, and symptom checklists—so your team moves fast.
             </p>
 
-            <div className="space-y-4 mb-8">
-              {features.map((feature, index) => (
-                <div 
+            <div className="space-y-3">
+              {links.map((link, index) => (
+                <a 
                   key={index}
-                  className="flex items-center gap-4"
+                  href="#"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-ct-bg-secondary/50 border border-white/5 hover:border-ct-accent/30 transition-all duration-200 group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-ct-accent/10 flex items-center justify-center">
-                    <feature.icon className="w-5 h-5 text-ct-accent" />
-                  </div>
-                  <span className="text-ct-text text-sm">{feature.text}</span>
-                </div>
+                  <link.icon className="w-5 h-5 text-ct-accent" />
+                  <span className="text-ct-text text-sm flex-1">{link.text}</span>
+                  <ArrowRight className="w-4 h-4 text-ct-text-secondary group-hover:text-ct-accent transition-colors" />
+                </a>
               ))}
             </div>
-
-            <button className="btn-primary">
-              Start an Order
-            </button>
           </div>
         </div>
       </div>

@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   theme: {
     extend: {
       colors: {
@@ -46,9 +50,10 @@ module.exports = {
         'ct-text-secondary': '#A7B1C6',
       },
       fontFamily: {
-        'display': ['Sora', 'sans-serif'],
-        'body': ['Inter', 'sans-serif'],
-        'mono': ['IBM Plex Mono', 'monospace'],
+        'sans': ['var(--font-inter)', 'sans-serif'],
+        'display': ['var(--font-sora)', 'sans-serif'],
+        'body': ['var(--font-inter)', 'sans-serif'],
+        'mono': ['var(--font-ibm-plex-mono)', 'monospace'],
       },
       borderRadius: {
         xl: "calc(var(--radius) + 4px)",

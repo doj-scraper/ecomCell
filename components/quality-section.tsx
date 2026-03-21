@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { FileText, Zap, Headphones, ArrowRight } from 'lucide-react';
+"use client";
 
-export function SupportSection() {
+import { useEffect, useRef, useState } from 'react';
+import { Check } from 'lucide-react';
+
+export function QualitySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -23,15 +25,16 @@ export function SupportSection() {
     return () => observer.disconnect();
   }, []);
 
-  const links = [
-    { text: 'Screen replacement guide', icon: FileText },
-    { text: 'Battery calibration steps', icon: Zap },
-    { text: 'Connector diagram PDF', icon: FileText },
-    { text: 'Open a support ticket', icon: Headphones },
+  const features = [
+    'Functional test on key assemblies',
+    'Visual + fit check',
+    'Anti-static packaging',
   ];
 
+  const badges = ['ISO 9001', 'QC Check', 'Traceable Batches'];
+
   return (
-    <section ref={sectionRef} id="support" className="section-pinned flex items-center" style={{ zIndex: 80 }}>
+    <section ref={sectionRef} className="section-pinned flex items-center" style={{ zIndex: 60 }}>
       <div className="w-full px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-screen">
           {/* Left: Image */}
@@ -42,8 +45,8 @@ export function SupportSection() {
           >
             <div className="relative aspect-video rounded-2xl overflow-hidden">
               <img 
-                src="/images/teardown_guide.jpg" 
-                alt="Teardown guide"
+                src="/images/testing_lab.jpg" 
+                alt="Testing lab"
                 className="w-full h-full object-cover animate-drift"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-ct-bg/40 to-transparent" />
@@ -57,24 +60,27 @@ export function SupportSection() {
             }`}
           >
             <h2 className="heading-display text-3xl sm:text-4xl lg:text-5xl text-ct-text mb-4">
-              READY TO<br />
-              <span className="text-ct-accent">INSTALL</span>
+              LAB-VERIFIED<br />
+              <span className="text-ct-accent">QUALITY</span>
             </h2>
             <p className="text-ct-text-secondary text-sm lg:text-base max-w-md mb-8">
-              Step-by-step guides, connector maps, and symptom checklists—so your team moves fast.
+              Every batch is function-tested, inspected, and packed to minimize DOA.
             </p>
 
-            <div className="space-y-3">
-              {links.map((link, index) => (
-                <a 
-                  key={index}
-                  href="#"
-                  className="flex items-center gap-3 p-3 rounded-lg bg-ct-bg-secondary/50 border border-white/5 hover:border-ct-accent/30 transition-all duration-200 group"
-                >
-                  <link.icon className="w-5 h-5 text-ct-accent" />
-                  <span className="text-ct-text text-sm flex-1">{link.text}</span>
-                  <ArrowRight className="w-4 h-4 text-ct-text-secondary group-hover:text-ct-accent transition-colors" />
-                </a>
+            <div className="space-y-3 mb-8">
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-ct-accent flex-shrink-0" />
+                  <span className="text-ct-text text-sm">{feature}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {badges.map((badge, index) => (
+                <span key={index} className="text-micro px-3 py-2 rounded-lg bg-ct-accent/10 text-ct-accent border border-ct-accent/20">
+                  {badge}
+                </span>
               ))}
             </div>
           </div>

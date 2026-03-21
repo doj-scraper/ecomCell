@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+"use client";
 
-export function ShippingSection() {
+import { useEffect, useRef, useState } from 'react';
+import { Check } from 'lucide-react';
+
+export function DashboardSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -22,14 +25,15 @@ export function ShippingSection() {
     return () => observer.disconnect();
   }, []);
 
-  const metrics = [
-    { value: '2–5', unit: 'days', label: 'Delivery' },
-    { value: 'DDP', unit: '', label: 'Available' },
-    { value: 'Batch', unit: '', label: 'Tracking' },
+  const features = [
+    'Reorder in two clicks',
+    'Saved SKU lists',
+    'Team permissions',
+    'Spend summaries',
   ];
 
   return (
-    <section ref={sectionRef} className="section-pinned flex items-center" style={{ zIndex: 70 }}>
+    <section ref={sectionRef} id="dashboard" className="section-pinned flex items-center" style={{ zIndex: 90 }}>
       <div className="w-full px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-screen">
           {/* Left: Content */}
@@ -39,36 +43,37 @@ export function ShippingSection() {
             }`}
           >
             <h2 className="heading-display text-3xl sm:text-4xl lg:text-5xl text-ct-text mb-4">
-              GLOBAL<br />
-              <span className="text-ct-accent">DISPATCH</span>
+              YOUR<br />
+              <span className="text-ct-accent">OPERATION</span>
             </h2>
             <p className="text-ct-text-secondary text-sm lg:text-base max-w-md mb-8">
-              Consolidated packing, customs docs included, and tracked from warehouse to door.
+              Order history, saved lists, and team access—built for scale.
             </p>
 
-            <div className="grid grid-cols-3 gap-4">
-              {metrics.map((metric, index) => (
-                <div key={index} className="stat-card text-center">
-                  <div className="text-ct-accent font-display font-bold text-2xl lg:text-3xl">
-                    {metric.value}
-                    <span className="text-lg">{metric.unit}</span>
-                  </div>
-                  <div className="text-micro text-ct-text-secondary mt-1">{metric.label}</div>
+            <div className="space-y-3 mb-8">
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-ct-accent flex-shrink-0" />
+                  <span className="text-ct-text text-sm">{feature}</span>
                 </div>
               ))}
             </div>
+
+            <button className="btn-primary">
+              View Dashboard Demo
+            </button>
           </div>
 
-          {/* Right: Map */}
+          {/* Right: Dashboard Image */}
           <div 
             className={`relative transition-all duration-700 delay-200 ${
               isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
           >
-            <div className="relative aspect-video rounded-2xl overflow-hidden dashboard-card">
+            <div className="relative aspect-video rounded-2xl overflow-hidden dashboard-card animate-float">
               <img 
-                src="/images/shipping_map.jpg" 
-                alt="Global shipping map"
+                src="/images/dashboard_ui.jpg" 
+                alt="Dashboard UI"
                 className="w-full h-full object-cover"
               />
             </div>

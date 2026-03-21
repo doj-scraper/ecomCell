@@ -1,4 +1,7 @@
+"use client";
+
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { ShoppingCart, User, Menu, X } from 'lucide-react';
 
 export function Navigation() {
@@ -28,19 +31,19 @@ export function Navigation() {
       <div className="w-full px-6 lg:px-12">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-ct-accent flex items-center justify-center">
               <span className="text-ct-bg font-bold text-sm">CT</span>
             </div>
             <span className="font-display font-bold text-ct-text tracking-wide">CellTech</span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection('catalog')} className="nav-link">Catalog</button>
-            <button onClick={() => scrollToSection('quote')} className="nav-link">Quote</button>
-            <button onClick={() => scrollToSection('support')} className="nav-link">Support</button>
-            <button onClick={() => scrollToSection('dashboard')} className="nav-link">Account</button>
+            <Link href="/catalog" className="nav-link">Catalog</Link>
+            <Link href="/quote" className="nav-link">Quote</Link>
+            <Link href="/support" className="nav-link">Support</Link>
+            <Link href="/dashboard" className="nav-link">Account</Link>
           </div>
 
           {/* Actions */}
@@ -69,10 +72,10 @@ export function Navigation() {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-ct-bg/95 backdrop-blur-md border-t border-white/5">
           <div className="px-6 py-4 space-y-4">
-            <button onClick={() => scrollToSection('catalog')} className="block w-full text-left nav-link py-2">Catalog</button>
-            <button onClick={() => scrollToSection('quote')} className="block w-full text-left nav-link py-2">Quote</button>
-            <button onClick={() => scrollToSection('support')} className="block w-full text-left nav-link py-2">Support</button>
-            <button onClick={() => scrollToSection('dashboard')} className="block w-full text-left nav-link py-2">Account</button>
+            <Link href="/catalog" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Catalog</Link>
+            <Link href="/quote" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Quote</Link>
+            <Link href="/support" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Support</Link>
+            <Link href="/dashboard" className="block w-full text-left nav-link py-2" onClick={() => setIsMobileMenuOpen(false)}>Account</Link>
             <div className="pt-4 border-t border-white/10 flex items-center gap-6">
               <button className="flex items-center gap-2 text-sm text-ct-text-secondary">
                 <ShoppingCart className="w-4 h-4" />

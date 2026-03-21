@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { Check } from 'lucide-react';
+"use client";
 
-export function QualitySection() {
+import { useEffect, useRef, useState } from 'react';
+import { User, CreditCard, FileText } from 'lucide-react';
+
+export function CheckoutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -24,15 +26,13 @@ export function QualitySection() {
   }, []);
 
   const features = [
-    'Functional test on key assemblies',
-    'Visual + fit check',
-    'Anti-static packaging',
+    { icon: User, text: 'Guest checkout available' },
+    { icon: CreditCard, text: 'Net-30 for approved accounts' },
+    { icon: FileText, text: 'Instant invoice + tracking' },
   ];
 
-  const badges = ['ISO 9001', 'QC Check', 'Traceable Batches'];
-
   return (
-    <section ref={sectionRef} className="section-pinned flex items-center" style={{ zIndex: 60 }}>
+    <section ref={sectionRef} className="section-pinned flex items-center" style={{ zIndex: 40 }}>
       <div className="w-full px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-screen">
           {/* Left: Image */}
@@ -43,8 +43,8 @@ export function QualitySection() {
           >
             <div className="relative aspect-video rounded-2xl overflow-hidden">
               <img 
-                src="/images/testing_lab.jpg" 
-                alt="Testing lab"
+                src="/images/checkout_ui.jpg" 
+                alt="Checkout UI"
                 className="w-full h-full object-cover animate-drift"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-ct-bg/40 to-transparent" />
@@ -58,29 +58,30 @@ export function QualitySection() {
             }`}
           >
             <h2 className="heading-display text-3xl sm:text-4xl lg:text-5xl text-ct-text mb-4">
-              LAB-VERIFIED<br />
-              <span className="text-ct-accent">QUALITY</span>
+              FAST<br />
+              <span className="text-ct-accent">CHECKOUT</span>
             </h2>
             <p className="text-ct-text-secondary text-sm lg:text-base max-w-md mb-8">
-              Every batch is function-tested, inspected, and packed to minimize DOA.
+              No surprises. MOQ, shipping, and tax calculated upfront—then pay securely.
             </p>
 
-            <div className="space-y-3 mb-8">
+            <div className="space-y-4 mb-8">
               {features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-ct-accent flex-shrink-0" />
-                  <span className="text-ct-text text-sm">{feature}</span>
+                <div 
+                  key={index}
+                  className="flex items-center gap-4"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-ct-accent/10 flex items-center justify-center">
+                    <feature.icon className="w-5 h-5 text-ct-accent" />
+                  </div>
+                  <span className="text-ct-text text-sm">{feature.text}</span>
                 </div>
               ))}
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              {badges.map((badge, index) => (
-                <span key={index} className="text-micro px-3 py-2 rounded-lg bg-ct-accent/10 text-ct-accent border border-ct-accent/20">
-                  {badge}
-                </span>
-              ))}
-            </div>
+            <button className="btn-primary">
+              Start an Order
+            </button>
           </div>
         </div>
       </div>
