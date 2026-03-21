@@ -1,6 +1,6 @@
-# CellTech Distributor
+# CellTech Distributor — Frontend
 
-B2B wholesale mobile repair parts landing page. A catalog-first, dark-themed marketing site for CellTech Distributor — selling OEM-grade phone components (screens, batteries, boards, cameras) to repair shops at wholesale prices.
+B2B wholesale mobile repair parts platform. A catalog-first, dark-themed application for CellTech Distributor — selling OEM-grade phone components (screens, batteries, boards, cameras) to repair shops at wholesale prices.
 
 ---
 
@@ -11,31 +11,31 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## Project Structure
+## Project Structure (Next.js Migration)
+
+The project has been migrated from a Vite SPA to a **Next.js 15 App Router** architecture for better performance, SEO, and scalability.
 
 ```
 app/
-├── index.html                  ← Vite entry
-├── package.json                ← Dependencies & scripts
-├── vite.config.ts              ← Vite config (@/* path alias)
-├── tailwind.config.js          ← Tailwind theme + ct-* colors
-├── tsconfig.app.json           ← TypeScript (strict, bundler mode)
-├── eslint.config.js            ← ESLint flat config
-├── components.json             ← shadcn/ui config
+├── app/                        ← Next.js App Router
+│   ├── layout.tsx              ← Root layout with fonts & metadata
+│   ├── page.tsx                ← Home page (composed of sections)
+│   ├── catalog/                ← Parts catalog page
+│   ├── inventory/              ← Real-time inventory table (API-connected)
+│   └── globals.css             ← Tailwind & global styles
+├── components/                 ← Reusable UI components
+│   ├── navigation.tsx          ← Shared navigation
+│   ├── products-section.tsx    ← API-connected product grid
+│   └── ...                     ← Other section components
+├── lib/
+│   ├── api.ts                  ← Typed API client for backend communication
+│   └── utils.ts                ← Utility functions (cn helper)
 ├── public/
-│   └── images/                 ← 16 static product/category images
-├── src/
-│   ├── main.tsx                ← App entry point
-│   ├── App.tsx                 ← All page sections (1345 lines)
-│   ├── App.css                 ← Global resets + scrollbar
-│   ├── index.css               ← Design tokens, custom classes, animations
-│   ├── components/ui/          ← 53 shadcn/ui primitives (available, not yet used)
-│   ├── hooks/use-mobile.ts     ← Mobile breakpoint hook
-│   └── lib/utils.ts            ← cn() helper
+│   └── images/                 ← Static assets
 ├── AGENTS.md                   ← Agent/dev guidelines
 ├── ARCHITECTURE.md             ← Architecture decisions
 └── README.md                   ← This file
@@ -47,92 +47,50 @@ app/
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | React 19.2 |
-| Build | Vite 7.2.4 |
-| Language | TypeScript 5.9.3 (strict) |
-| Styling | Tailwind CSS 3.4.19 + custom CSS classes |
-| UI Primitives | shadcn/ui (53 Radix components, new-york style) |
-| Icons | lucide-react |
-| Forms | react-hook-form (installed, not yet used) |
-| Validation | zod (installed, not yet used) |
-| Charts | recharts (installed, not yet used) |
-| Fonts | Sora, Inter, IBM Plex Mono |
+| Framework | Next.js 15.5 (App Router) |
+| Language | TypeScript 5.7 (Strict) |
+| Styling | Tailwind CSS 4.0 + Framer Motion |
+| API Client | Native Fetch with TypeScript interfaces |
+| Icons | Lucide React |
+| Fonts | Sora, Inter, IBM Plex Mono (via next/font) |
 
 ---
 
-## Available Scripts
+## Phase 2: API Integration & Deployment ✅
 
-```bash
-npm run dev      # Start dev server (Vite)
-npm run build    # TypeScript check + production build
-npm run lint     # Run ESLint
-npm run preview  # Preview production build
-```
+The application is now fully connected to the **CellTech Backend** and deployed.
+
+### Key Achievements:
+- **Next.js Migration:** Successfully moved from Vite to Next.js App Router.
+- **Real-time Data:** The `Inventory` and `Catalog` sections now fetch live data from the backend API.
+- **Dynamic Filtering:** Users can filter parts by Brand and Model using real data from the database.
+- **Deployment:** 
+  - **Frontend:** Deployed to Vercel with automatic CI/CD.
+  - **Backend:** Deployed to Vercel/Neon (PostgreSQL).
+- **Error Handling:** Implemented global Error Boundaries and 404 handling.
 
 ---
 
 ## Design System
 
-### Color Palette
-
-| Token | Hex | Tailwind Class | Usage |
-|-------|-----|---------------|-------|
-| Background | `#070A12` | `bg-ct-bg` | Page background |
-| Background alt | `#111725` | `bg-ct-bg-secondary` | Section backgrounds |
-| Accent | `#00E5C0` | `text-ct-accent` / `bg-ct-accent` | Primary CTA color |
-| Text | `#F2F5FA` | `text-ct-text` | Primary text |
-| Text muted | `#A7B1C6` | `text-ct-text-secondary` | Secondary text |
+### Color Palette (Custom Tokens)
+- **Background:** `#070A12` (`bg-ct-bg`)
+- **Accent:** `#00E5C0` (`text-ct-accent`)
+- **Text:** `#F2F5FA` (`text-ct-text`)
 
 ### Typography
-
-| Token | Font | Usage |
-|-------|------|-------|
-| `.font-display` | Sora | Headings (uppercase, tight tracking) |
-| `.font-body` | Inter | Body copy |
-| `.font-mono` | IBM Plex Mono | SKUs, labels, micro text |
-
-### Custom CSS Classes
-
-Key classes defined in `src/index.css`:
-
-- **Buttons:** `.btn-primary` (accent filled, pill), `.btn-secondary` (ghost outline)
-- **Cards:** `.card-dark` (glassmorphism), `.product-card`, `.stat-card`, `.dashboard-card`
-- **Navigation:** `.nav-link`, `.filter-chip`, `.link-arrow`
-- **Typography:** `.heading-display` (uppercase Sora), `.text-micro` (mono 12px)
-- **Inputs:** `.input-dark` (dark theme form input)
-- **Overlays:** `.grid-overlay`, `.vignette-overlay`, `.noise-overlay`
-
----
-
-## Current Status
-
-**Landing page complete.** The site is a single scrollable page with 13 sections:
-
-1. Navigation (fixed, sticky, mobile menu)
-2. Hero (split layout, animated entrance)
-3. Categories (grid of 4 part types)
-4. Products (8 hardcoded items, filterable)
-5. Checkout (feature showcase)
-6. Quote (form UI, non-functional)
-7. Quality (trust badges)
-8. Shipping (delivery metrics)
-9. Support (resource links)
-10. Dashboard (preview image)
-11. Testimonials (6 cards)
-12. Partners (brand logos)
-13. CTA (email capture)
-14. Footer
+- **Display:** Sora (Headings)
+- **Body:** Inter (Content)
+- **Mono:** IBM Plex Mono (SKUs, Labels)
 
 ---
 
 ## Roadmap
 
-- [ ] Client-side routing (React Router or equivalent)
-- [ ] API integration layer
-- [ ] State management (React Context or store)
-- [ ] Functional cart and checkout
-- [ ] Auth (login/register)
-- [ ] Order history and account pages
-- [ ] Extract sections into separate component files
-- [ ] Add unit and integration tests
-- [ ] Integrate real product data from API
+- [x] Next.js App Router Migration
+- [x] Backend API Integration (Inventory/Catalog)
+- [ ] Authentication System (JWT/Session)
+- [ ] Functional Quote Submission
+- [ ] User Dashboard & Order History
+- [ ] Shopping Cart Persistence
+- [ ] Unit & Integration Testing
