@@ -8,6 +8,8 @@ export function ProductsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -24,21 +26,37 @@ export function ProductsSection() {
       observer.observe(sectionRef.current);
     }
 
+    // Fetch real products from backend
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://celltech-backend.vercel.app/api/parts?device=iPhone');
+        const data = await response.json();
+        if (data.success) {
+          const mappedProducts = data.parts.map((p: any) => ({
+            name: p.partName,
+            sku: p.skuId,
+            price: p.price ? `$${p.price.toFixed(2)}` : 'Contact for Price',
+            moq: 1, // Default MOQ
+            stock: p.stock > 0 ? 'In Stock' : 'Out of Stock',
+            image: '/images/product_placeholder.jpg', // Placeholder since backend doesn't provide images
+            category: p.category
+          }));
+          setProducts(mappedProducts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
+
     return () => observer.disconnect();
   }, []);
 
-  const filters = ['All', 'Screens', 'Batteries', 'Boards', 'Cameras'];
-  
-  const products = [
-    { name: 'OLED Display Assembly', sku: 'DSP-001', price: '$89.00', moq: 5, stock: 'In Stock', image: '/images/product_screen.jpg', category: 'Screens' },
-    { name: 'Li-Polymer Battery', sku: 'BAT-002', price: '$24.00', moq: 10, stock: 'In Stock', image: '/images/product_battery.jpg', category: 'Batteries' },
-    { name: 'Charging Port Flex', sku: 'CHG-003', price: '$12.00', moq: 20, stock: 'Low Stock', image: '/images/product_charging.jpg', category: 'Boards' },
-    { name: 'Rear Camera Module', sku: 'CAM-004', price: '$45.00', moq: 8, stock: 'In Stock', image: '/images/product_camera.jpg', category: 'Cameras' },
-    { name: 'Power Button Flex', sku: 'PWR-005', price: '$8.00', moq: 25, stock: 'In Stock', image: '/images/product_power.jpg', category: 'Boards' },
-    { name: 'Earpiece Speaker', sku: 'SPK-006', price: '$6.00', moq: 30, stock: 'In Stock', image: '/images/product_speaker.jpg', category: 'Boards' },
-    { name: 'Logic Board', sku: 'BRD-007', price: '$199.00', moq: 3, stock: 'In Stock', image: '/images/category_board.jpg', category: 'Boards' },
-    { name: 'Front Camera', sku: 'CAM-008', price: '$18.00', moq: 15, stock: 'Low Stock', image: '/images/category_camera.jpg', category: 'Cameras' },
-  ];
+  const filters = ['All', 'Display', 'Battery', 'Camera', 'Charging Port'];
 
   const filteredProducts = activeFilter === 'All' 
     ? products 
