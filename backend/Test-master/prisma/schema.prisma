@@ -1,0 +1,259 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ───────────────────────────────────────────
+
+enum QualityGrade {
+  OEM
+  Premium
+  Aftermarket
+  U  // Unknown - for legacy/unverified stock
+  NA // Not Applicable - for tools, adhesives, etc.
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// ─── AUTH & B2B USER TABLES (NextAuth Prisma Adapter) ─
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String?   // Hashed with bcrypt - null for OAuth users
+  emailVerified DateTime?
+  name          String?
+  image         String?
+
+  // B2B-specific fields
+  company       String?
+  taxId         String?
+  netTerms      Boolean  @default(false) // Net-30 approved accounts
+  role          UserRole @default(CUSTOMER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  orders   Order[]
+  cart     Cart?     // One active cart per user
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Required by NextAuth for email verification and password reset
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── DEVICE HIERARCHY (Brand → ModelType → Generation → Variant) ──
+
+model Brand {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // e.g., "Apple", "Samsung"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  modelTypes ModelType[]
+}
+
+model ModelType {
+  id        Int      @id @default(autoincrement())
+  brandId   Int
+  name      String   // e.g., "iPhone", "Galaxy S", "Galaxy Z Fold"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  brand       Brand        @relation(fields: [brandId], references: [id])
+  generations Generation[]
+
+  @@unique([brandId, name])
+}
+
+model Generation {
+  id          Int      @id @default(autoincrement())
+  modelTypeId Int
+  name        String   // e.g., "13", "14", "S24"
+  releaseYear Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modelType ModelType @relation(fields: [modelTypeId], references: [id])
+  variants  Variant[]
+
+  @@unique([modelTypeId, name])
+}
+
+model Variant {
+  id           Int      @id @default(autoincrement())
+  generationId Int
+  name         String   // e.g., "Pro Max", "Ultra", "Base" (assume 5G baseline)
+  modelNumber  String   @unique // e.g., "A2631", "SM-S928U"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  generation      Generation       @relation(fields: [generationId], references: [id])
+  compatibilities CompatibilityMap[]
+
+  @@unique([generationId, name])
+}
+
+// ─── CATALOG & INVENTORY (Smart SKUs) ────────────────
+
+// The 4 Buckets: 1=Visual Interface, 2=Chassis & Enclosure,
+//                3=Functional Modules, 4=Interconnects
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // e.g., "Functional Modules"
+  prefix    String   @unique // e.g., "1", "2", "3", "4"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inventory Inventory[]
+}
+
+model Inventory {
+  // Smart SKU format: [Bucket]-[PartType]-[Grade]-[Device]
+  // e.g., 3-C-O-IP13 = Functional Module / Battery / OEM / iPhone 13
+  skuId          String       @id
+  categoryId     Int
+  partName       String       // Required — used in search and display
+  qualityGrade   QualityGrade // Required — no unknown grades in production
+  wholesalePrice Int          @default(0) // Cents. 0 = "Contact for Price" on frontend
+  stockLevel     Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  category        Category         @relation(fields: [categoryId], references: [id])
+  specifications  Specification[]
+  compatibilities CompatibilityMap[]
+  orderItems      OrderItem[]
+  cartItems       CartItem[]
+}
+
+// Dedicated spec rows — filterable, queryable, never pipe-delimited strings
+model Specification {
+  id        Int      @id @default(autoincrement())
+  skuId     String
+  label     String   // e.g., "Capacity"
+  value     String   // e.g., "3227 mAh"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inventory Inventory @relation(fields: [skuId], references: [skuId], onDelete: Cascade)
+
+  @@unique([skuId, label]) // One value per spec label per part
+}
+
+// Many-to-many glue: one part → many variants, one variant → many parts
+model CompatibilityMap {
+  skuId     String
+  variantId Int
+
+  inventory Inventory @relation(fields: [skuId], references: [skuId], onDelete: Cascade)
+  variant   Variant   @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@id([skuId, variantId]) // Composite PK — no duplicate relationships
+}
+
+// ─── CART (Server-side persistence for multi-session B2B quotes) ──
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String   @unique // One active cart per user at all times
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  skuId     String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart      Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  inventory Inventory @relation(fields: [skuId], references: [skuId])
+
+  @@unique([cartId, skuId]) // Adding existing SKU updates quantity, no duplicate rows
+}
+
+// ─── ORDERS (B2B Ledger — prices snapshotted at purchase time) ───
+
+model Order {
+  id                    String      @id @default(cuid())
+  userId                String
+  status                OrderStatus @default(PENDING)
+  shippingAddress       Json        // Snapshot at time of order — never join back to User
+  stripePaymentIntentId String?     @unique
+  notes                 String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  user  User        @relation(fields: [userId], references: [id])
+  items OrderItem[]
+}
+
+model OrderItem {
+  id                  String   @id @default(cuid())
+  orderId             String
+  skuId               String
+  quantity            Int
+  unitPriceAtPurchase Int      // Cents — snapshot, never join back to Inventory for history
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  inventory Inventory @relation(fields: [skuId], references: [skuId])
+}

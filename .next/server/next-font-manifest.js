@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{},\"appUsingSizeAdjust\":false,\"pagesUsingSizeAdjust\":false}"
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/home/runner/workspace/app/layout\":[\"static/media/d3ebbfd689654d3a-s.p.woff2\",\"static/media/98e207f02528a563-s.p.woff2\",\"static/media/e4af272ccee01ff0-s.p.woff2\",\"static/media/f3f7e95f2dbc4fe4-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

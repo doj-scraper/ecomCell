@@ -1,7 +1,8 @@
-modules = ["nodejs-20", "web"]
+modules = ["nodejs-20", "web", "graphite-cli", "python-base-3.13", "gcloud", "bash", "typescript-language-server", "nodejs-with-prybar-18"]
 
 [nix]
 channel = "stable-25_05"
+packages = ["apk-tools", "unzipNLS", "codex", "opencode"]
 
 [agent]
 expertMode = true
@@ -29,6 +30,10 @@ waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
 
 [[ports]]
 localPort = 5000
